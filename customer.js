@@ -141,14 +141,14 @@ function getJob() {
                                     console.log("\n");
                                     inq.prompt([
                                         {
-                                            name: "newItem",
-                                            message: "What item would you like to add?",
+                                            name: "newDept",
+                                            message: "What is the product department?",
                                             type: "input"
                                         }   
                                         ,
                                         {
                                             name: "newDescr",
-                                            message: "Please add a short description?",
+                                            message: "Please add an item description?",
                                             type: "input"
                                         },
                                         {
@@ -165,7 +165,7 @@ function getJob() {
                                         connection.query(
                                             "INSERT INTO products SET ?", 
                                             {
-                                                Item: value.newItem,
+                                                Dept: value.newDept,
                                                 Description: value.newDescr,
                                                 Price: value.newPrice,
                                                 Quantity: value.newQuant    
@@ -195,8 +195,65 @@ function getJob() {
                 
             case "supervisor":
                 console.log("You are the supervisor!!");
-                supervisor.superFunc("stereo",452.99,connection,getJob);
+                function askSup () {
+                    inq.prompt([
+                        {
+                            type: "list",
+                            message: "What would you like to do?\n\n",
+                            choices:["Product Sales by Department","Create New Department","Exit"],
+                            name: "action"
+                        },
+                        {
+                            name: "confirm",
+                            message: "Are you sure?",
+                            type: "confirm",
+                            default:true
+                        }
+                    ]).then((value) => {
+                        if (value.confirm) {
+                            switch(value.action) {
+                                case "Product Sales by Department": 
+                                    supervisor.superFunc.seeDeptSales(connection,askSup);                                    
+                                    break;
+                                case "Create New Department":
+                                    console.log("\n");
+                                    inq.prompt([
+                                        {
+                                            name: "newSupDept",
+                                            message: "What is the product department?",
+                                            type: "input"
+                                        }   
+                                        ,
+                                        {
+                                            name: "newCost",
+                                            message: "What is the overhead cost?",
+                                            type: "input"
+                                        }
+                                    ]).then((value) => {
+                                        connection.query(
+                                            "INSERT INTO departments SET ?", 
+                                            {
+                                                Department_name: value.newSupDept,
+                                                Overhead_Cost: newCost
+                                            },
+                                            function(err) {
+                                                if(err) throw err;
+                                                // logs the actual query being run
+                                            console.log("Department added!");
+                                            supervisor.superFunc.createDept(connection,askSup);
+                                            }
+                                        );
+                                    });
+                                    break;
+                                default:
+                                    getJob();
+                            }
+                        }
+                    });
+                }
+                askSup();
                 break;
+
             default:
                 getJob();
         }
