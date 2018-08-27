@@ -57,31 +57,32 @@ function getJob() {
                             [{
                                 id: value.choice
                             }], function(err,res) {
-                            if(err) throw err;
-                            if (value.number<=res[0].Quantity) {
-                                var total = res[0].Price*value.number;
-                                console.log("\nThe total for your order is "+total);
-                                var query = connection.query(
-                                    "UPDATE products SET ? WHERE ?",
-                                    [ {
-                                        Quantity: res[0].Quantity-value.number,
-                                        Product_Sales: res[0].Product_Sales+total
-                                    },
-                                    {
-                                        id: value.choice
-                                    }
-                                    ], function(err,res) {
-                                    if(err) throw err;
-                                    // logs the actual query being run
-                                    console.log(query.sql);
-                                    showCustProds(getJob);
-                                });
+                                if(err) throw err;
+                                if (value.number<=res[0].Quantity) {
+                                    var total = res[0].Price*value.number;
+                                    console.log("\nThe total for your order is "+total);
+                                    var query = connection.query(
+                                        "UPDATE products SET ? WHERE ?",
+                                        [ {
+                                            Quantity: res[0].Quantity-value.number,
+                                            Product_Sales: res[0].Product_Sales+total
+                                        },
+                                        {
+                                            id: value.choice
+                                        }
+                                        ], function(err,res) {
+                                        if(err) throw err;
+                                        // logs the actual query being run
+                                        console.log(query.sql);
+                                        showCustProds(getJob);
+                                    });
+                                }
+                                else {
+                                    console.log("\nCan't fulfill order! Sorry.\n");
+                                    getJob();
+                                }
                             }
-                            else {
-                                console.log("\nCan't fulfill order! Sorry.\n");
-                                getJob();
-                            }
-                        });
+                        );
                     });
                 });
                 break;
@@ -144,8 +145,7 @@ function getJob() {
                                             name: "newDept",
                                             message: "What is the product department?",
                                             type: "input"
-                                        }   
-                                        ,
+                                        },
                                         {
                                             name: "newDescr",
                                             message: "Please add an item description?",
@@ -215,6 +215,7 @@ function getJob() {
                                 case "Product Sales by Department": 
                                     supervisor.superFunc.seeDeptSales(connection,askSup);                                    
                                     break;
+
                                 case "Create New Department":
                                     console.log("\n");
                                     inq.prompt([
@@ -234,17 +235,18 @@ function getJob() {
                                             "INSERT INTO departments SET ?", 
                                             {
                                                 Department_name: value.newSupDept,
-                                                Overhead_Cost: newCost
+                                                Overhead_Cost: value.newCost
                                             },
                                             function(err) {
                                                 if(err) throw err;
                                                 // logs the actual query being run
                                             console.log("Department added!");
-                                            supervisor.superFunc.createDept(connection,askSup);
+                                            supervisor.superFunc.seeDeptSales(connection,askSup);
                                             }
                                         );
                                     });
                                     break;
+
                                 default:
                                     getJob();
                             }

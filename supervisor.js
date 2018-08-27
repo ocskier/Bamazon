@@ -8,7 +8,6 @@ var checkProds = {
                 var itemArray = [];
                 for (let i = 0; i < res.length; i++) {
                     res[i].Total_Profit = res[i].Product_Sales-res[i].Overhead_Cost;
-                    console.log(res[i]);
                     itemArray.push(res[i]);
                 }
                 const table = cTable.getTable(itemArray);
@@ -17,18 +16,6 @@ var checkProds = {
             }
         );
     },
-    createDept: function (conn,callback) {
-        conn.query("select * from products where Quantity<5", function(err,res) {
-            if(err) throw err;
-            var itemArray = [];
-            for (let i = 0; i < res.length; i++) {
-                itemArray.push(res[i]);
-            }
-            const table = cTable.getTable(itemArray);
-            console.log("\nHere are the items low on inventory:\n\n"+table);
-            callback();
-        });
-    }
 };
 
 exports.superFunc = checkProds;
