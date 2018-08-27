@@ -1,5 +1,7 @@
 var inq = require("inquirer");
 var mysql = require("mysql");
+var manager=require("./manager.js");
+var employee=require("./employee.js");
 
 const cTable = require("console.table");
 
@@ -36,9 +38,11 @@ function getJob() {
         switch(value.job.toLowerCase()) {
             case "employee": 
                 console.log("You are an employee!!");
+                employee.employFunc("stereo",595.95,showCustProds);
                 break;
             case "manager":
                 console.log("You are the manager!!");
+                manager.managerFunc("stereo",8,showCustProds);
                 break;
             case "customer":
                 console.log("Hey how are you doing today?");
@@ -56,7 +60,7 @@ function showCustProds() {
     connection.connect(function(err) {
         if (err) throw err;
         console.log("connected as id " + connection.threadId + "\n");
-        connection.query("select * from items", function(err,res) {
+        connection.query("select * from stock", function(err,res) {
             if(err) throw err;
             var itemArray = [];
             for (let i = 0; i < res.length; i++) {

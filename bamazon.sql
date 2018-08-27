@@ -4,15 +4,15 @@ CREATE DATABASE bamazon_DB;
 
 USE bamazon_DB;
 
-CREATE TABLE items (
+CREATE TABLE stock (
   id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  name VARCHAR(30) not NULL,
-  descr VARCHAR(45) null,
-  price DECIMAL(10,2) NULL,
-  quantity INT NULL
+  Item VARCHAR(30) not NULL,
+  Description VARCHAR(45) null,
+  Price DECIMAL(10,2) NULL,
+  Quantity INT NULL
 );
 
-INSERT INTO items (name, descr, price,quantity)
+INSERT INTO stock (Item, Description, Price,Quantity)
 VALUES ("stereo", "Panasonic 200W",450.99, 6),("speakers", 'Panasonic 6.5" Two-Way 100W ',65.59, 12),
 ("tv", 'Sony 52" 1080P HDTV',795.99, 5),("ipod", "80GB Ipod Video 6th Gen",100.99, 2),
 ("iphone", "Iphone 6S Plus 64GB",545.89, 10),("hard drive", "Samsung 1TB SSD",219.95, 8),
