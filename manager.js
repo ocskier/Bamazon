@@ -149,11 +149,10 @@ var updateProds = {
                         
                     case "Exit":
                         callback();
-                        break;
                 }
             }
             else {
-                conn.end();
+                updateProds.askManager(conn,callback);
             }
         });
     }

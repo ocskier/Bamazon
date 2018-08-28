@@ -78,6 +78,9 @@ var checkProds = {
                         callback();
                 }
             }
+            else{
+                checkProds.askSup(conn,callback);
+            }
         });
     }
 };
