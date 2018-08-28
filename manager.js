@@ -1,4 +1,5 @@
 const cTable = require("console.table");
+var colors = require("colors");
 
 var updateProds = {
     seeProds: function(conn,callback) {
@@ -9,7 +10,8 @@ var updateProds = {
                 itemArray.push(res[i]);
             }
             const table = cTable.getTable(itemArray);
-            console.log("\nHere are the items currently for sale:\n\n"+table);
+            console.log(colors.bgWhite.black("\nHere are the items currently for sale:\n\n"));
+            console.log(table);
             callback();
         });
     },

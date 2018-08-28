@@ -1,5 +1,7 @@
 var inq = require("inquirer");
 var mysql = require("mysql");
+var colors = require("colors/safe");
+
 var manager=require("./manager.js");
 var supervisor=require("./supervisor.js");
 
@@ -23,7 +25,7 @@ function getJob() {
   inq.prompt([
     {
         name: "job",
-        message: "What is your role at Bamazon?",
+        message: "What is your role at Bamazon? (Customer,Manager,Supervisor)",
         type: "input"
     },
     {
@@ -59,9 +61,9 @@ function getJob() {
                             }], function(err,res) {
                                 if(err) throw err;
                                 if (value.number<=res[0].Quantity) {
-                                    var total = res[0].Price*value.number;
-                                    console.log("\nThe total for your order is "+total);
-                                    var query = connection.query(
+                                    var total = (res[0].Price*value.number).toFixed(2);
+                                    console.log(colors.bgWhite.bold.green('\n  The total for your order is $'+total+"  "));
+                                    connection.query(
                                         "UPDATE products SET ? WHERE ?",
                                         [ {
                                             Quantity: res[0].Quantity-value.number,
@@ -73,7 +75,6 @@ function getJob() {
                                         ], function(err,res) {
                                         if(err) throw err;
                                         // logs the actual query being run
-                                        console.log(query.sql);
                                         showCustProds(getJob);
                                     });
                                 }
@@ -194,7 +195,6 @@ function getJob() {
                 break;
                 
             case "supervisor":
-                console.log("You are the supervisor!!");
                 function askSup () {
                     inq.prompt([
                         {
@@ -274,7 +274,8 @@ function showCustProds(callback) {
             itemArray.push(res[i]);
         }
         const table = cTable.getTable(itemArray);
-        console.log("\nHere are the items currently for sale:\n\n"+table);
+        console.log(colors.bgWhite.black("\nHere are the items currently for sale:\n\n"));
+        console.log(table);
         callback();
     });
 }
