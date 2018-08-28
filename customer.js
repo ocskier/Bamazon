@@ -62,7 +62,7 @@ function getJob() {
                                 if(err) throw err;
                                 if (value.number<=res[0].Quantity) {
                                     var total = (res[0].Price*value.number).toFixed(2);
-                                    console.log(colors.bgWhite.bold.green('\n  The total for your order is $'+total+"  "));
+                                    console.log(colors.bgWhite.bold.red('\n  The total for your order is $'+total+"  "));
                                     connection.query(
                                         "UPDATE products SET ? WHERE ?",
                                         [ {
@@ -89,171 +89,13 @@ function getJob() {
                 break;
 
             case "manager":     
-                function askManager () {
-                    inq.prompt([
-                        {
-                            type: "list",
-                            message: "What would you like to do?\n\n",
-                            choices:["View Products for Sale","View Low Inventory","Add to Inventory","Add New Product","Exit"],
-                            name: "action"
-                        },
-                        {
-                            name: "confirm",
-                            message: "Are you sure?",
-                            type: "confirm",
-                            default:true
-                        }
-                    ]).then((value) => {
-                        if (value.confirm) {
-                            switch(value.action) {
-                                case "View Products for Sale": 
-                                    manager.managerFunc.seeProds(connection,askManager);
-                                    break;
-                                case "View Low Inventory":
-                                    manager.managerFunc.viewLowInv(connection,askManager);
-                                    break;
-                                case "Add to Inventory":
-                                    manager.managerFunc.seeProds(connection,function() {
-                                        inq.prompt([
-                                            {
-                                                name: "choice",
-                                                message: "What item (id) would you like to add more?",
-                                                type: "input"
-                                            }   
-                                            ,
-                                            {
-                                                name: "quantity",
-                                                message: "How much would you like to add?",
-                                                type: "input"
-                                            }
-                                        ]).then((value) => {
-                                            connection.query(
-                                                "select Quantity from products WHERE ?",
-                                                [{
-                                                    id: value.choice
-                                                }], function(err,res) {
-                                                if(err) throw err;
-                                                manager.managerFunc.addInv(value.choice,parseInt(value.quantity)+res[0].Quantity,connection,askManager);
-                                            });
-                                        });
-                                    });
-                                    break;
-                                
-                                case "Add New Product":
-                                    console.log("\n");
-                                    inq.prompt([
-                                        {
-                                            name: "newDept",
-                                            message: "What is the product department?",
-                                            type: "input"
-                                        },
-                                        {
-                                            name: "newDescr",
-                                            message: "Please add an item description?",
-                                            type: "input"
-                                        },
-                                        {
-                                            name: "newPrice",
-                                            message: "What is the sale price?",
-                                            type: "input"
-                                        },
-                                        {
-                                            name: "newQuant",
-                                            message: "How much inventory to add?",
-                                            type: "input"
-                                        }
-                                    ]).then((value) => {
-                                        connection.query(
-                                            "INSERT INTO products SET ?", 
-                                            {
-                                                Dept: value.newDept,
-                                                Description: value.newDescr,
-                                                Price: value.newPrice,
-                                                Quantity: value.newQuant    
-                                            },
-                                            function(err) {
-                                                if(err) throw err;
-                                                // logs the actual query being run
-                                                console.log("Item added!");
-                                                manager.managerFunc.seeProds(connection,askManager);
-                                            }
-                                        )
-                                    });
-                                    break;
-                                    
-                                case "Exit":
-                                    getJob();
-                                    break;
-                            }
-                        }
-                        else {
-                            connection.end();
-                        }
-                    });
-                }
-                askManager();
+
+                manager.managerFunc.askManager(connection,getJob);
                 break;
                 
             case "supervisor":
-                function askSup () {
-                    inq.prompt([
-                        {
-                            type: "list",
-                            message: "What would you like to do?\n\n",
-                            choices:["Product Sales by Department","Create New Department","Exit"],
-                            name: "action"
-                        },
-                        {
-                            name: "confirm",
-                            message: "Are you sure?",
-                            type: "confirm",
-                            default:true
-                        }
-                    ]).then((value) => {
-                        if (value.confirm) {
-                            switch(value.action) {
-                                case "Product Sales by Department": 
-                                    supervisor.superFunc.seeDeptSales(connection,askSup);                                    
-                                    break;
-
-                                case "Create New Department":
-                                    console.log("\n");
-                                    inq.prompt([
-                                        {
-                                            name: "newSupDept",
-                                            message: "What is the product department?",
-                                            type: "input"
-                                        }   
-                                        ,
-                                        {
-                                            name: "newCost",
-                                            message: "What is the overhead cost?",
-                                            type: "input"
-                                        }
-                                    ]).then((value) => {
-                                        connection.query(
-                                            "INSERT INTO departments SET ?", 
-                                            {
-                                                Department_name: value.newSupDept,
-                                                Overhead_Cost: value.newCost
-                                            },
-                                            function(err) {
-                                                if(err) throw err;
-                                                // logs the actual query being run
-                                            console.log("Department added!");
-                                            supervisor.superFunc.seeDeptSales(connection,askSup);
-                                            }
-                                        );
-                                    });
-                                    break;
-
-                                default:
-                                    getJob();
-                            }
-                        }
-                    });
-                }
-                askSup();
+                
+                supervisor.superFunc.askSup(connection,getJob);
                 break;
 
             default:
