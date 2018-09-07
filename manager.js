@@ -40,10 +40,9 @@ var updateProds = {
             }
             ], function(err) {
             if(err) throw err;
-            // logs the actual query being run
-            console.log(query.sql);
-            console.log(newQuantity+" added!");
-            updateProds.askManager(conn,callback);
+
+            console.log(colors.bgYellow.red("The updated inventory is "+newQuantity+" of iD: "+selItem));
+            updateProds.seeProds(conn,callback);
             }
         );
     },
@@ -93,14 +92,20 @@ var updateProds = {
                                     type: "input"
                                 }
                             ]).then((value) => {
-                                conn.query(
-                                    "select Quantity from products WHERE ?",
-                                    [{
-                                        id: value.choice
-                                    }], function(err,res) {
-                                    if(err) throw err;
-                                    updateProds.addInv(value.choice,parseInt(value.quantity)+res[0].Quantity,conn,callback);
-                                });
+                                if (isNaN(value.quantity)) {
+                                    console.log("\nYou did not enter a valid amount!\n");
+                                    updateProds.askManager(conn,callback);
+                                }
+                                else {
+                                    conn.query(
+                                        "select Quantity from products WHERE ?",
+                                        [{
+                                            id: value.choice
+                                        }], function(err,res) {
+                                        if(err) throw err;
+                                        updateProds.addInv(value.choice,parseInt(value.quantity)+res[0].Quantity,conn,callback);
+                                    });
+                                }
                             });
                         });
                         break;
