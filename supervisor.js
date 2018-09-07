@@ -9,7 +9,7 @@ function seeDeptSales (conn,callback) {
             if(err) throw err;
             var itemArray = [];
             for (let i = 0; i < res.length; i++) {
-                res[i].Total_Profit = res[i].Product_Sales-res[i].Overhead_Cost;
+                res[i].Total_Profit = parseInt(res[i].Product_Sales-res[i].Overhead_Cost);
                 itemArray.push(res[i]);
             }
             const table = cTable.getTable(itemArray);
