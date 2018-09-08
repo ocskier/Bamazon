@@ -1,23 +1,10 @@
 var inq = require("inquirer");
-var mysql = require("mysql");
 
 var customer=require("./customer.js");
 var manager=require("./manager.js");
 var supervisor=require("./supervisor.js");
 
-var connection = mysql.createConnection({
-    host: "localhost",
-  
-    // Your port; if not 3306
-    port: 3306,
-  
-    // Your username
-    user: "root",
-  
-    // Your password
-    password: "root",
-    database: "bamazon_DB"
-});
+var connection = require("./config/connection");
 
 function getJob() {
   inq.prompt([
@@ -38,17 +25,17 @@ function getJob() {
             
             case "customer":
                 console.log("\nHi how are you doing today?");
-                customer.custFunc.showCustProds(connection,getJob);
+                customer.custFunc.showCustProds(getJob);
                 break;
 
             case "manager":     
 
-                manager.managerFunc.askManager(connection,getJob);
+                manager.managerFunc.askManager(getJob);
                 break;
                 
             case "supervisor":
                 
-                supervisor.superFunc.askSup(connection,getJob);
+                supervisor.superFunc.askSup(getJob);
                 break;
 
             default:
@@ -57,12 +44,9 @@ function getJob() {
     }
     else {
         connection.end();
+        console.log("Thanks for using Bamazon!");
     }
   });
 }
 
-connection.connect(function(err) {
-    if (err) throw err;
-    console.log("connected as id " + connection.threadId + "\n");
-    getJob();
-});
+getJob();

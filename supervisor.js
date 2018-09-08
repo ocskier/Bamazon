@@ -2,8 +2,9 @@ const cTable = require("console.table");
 
 var colors = require("colors");
 var inq = require("inquirer");
+var conn = require("./config/connection");
 
-function seeDeptSales (conn,callback) {
+function seeDeptSales (callback) {
     conn.query("select departments.Department_id,departments.Department_name,departments.Overhead_Cost, SUM(products.Product_Sales) AS Product_Sales from products RIGHT JOIN departments ON products.Dept = departments.Department_name group by departments.Department_name ORDER BY departments.Department_id ASC",
         function(err,res) {
             if(err) throw err;
@@ -15,14 +16,14 @@ function seeDeptSales (conn,callback) {
             const table = cTable.getTable(itemArray);
             console.log(colors.bgWhite.black("\nHere are the store results:\n\n"));
             console.log(table);
-            checkProds.askSup(conn,callback);
+            checkProds.askSup(callback);
         }
     );
 }
 
 var checkProds = {
 
-    askSup: function (conn,callback) {
+    askSup: function (callback) {
         inq.prompt([
             {
                 type: "list",
@@ -40,7 +41,7 @@ var checkProds = {
             if (value.confirm) {
                 switch(value.action) {
                     case "Product Sales by Department": 
-                        seeDeptSales(conn,callback);                        
+                        seeDeptSales(callback);                        
                         break;
 
                     case "Create New Department":
@@ -68,7 +69,7 @@ var checkProds = {
                                     if(err) throw err;
                                     // logs the actual query being run
                                     console.log(colors.red("Department added!"));
-                                    seeDeptSales(conn,callback);
+                                    seeDeptSales(callback);
                                 }
                             );
                         });
@@ -79,7 +80,7 @@ var checkProds = {
                 }
             }
             else{
-                checkProds.askSup(conn,callback);
+                checkProds.askSup(callback);
             }
         });
     }

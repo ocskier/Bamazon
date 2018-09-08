@@ -2,9 +2,10 @@ const cTable = require("console.table");
 
 var colors = require("colors");
 var inq = require("inquirer");
+var conn = require("./config/connection");
 
 var showProds = {
-    showCustProds: function (conn,callback) {
+    showCustProds: function (callback) {
         conn.query("select id,Description,Price from products", function(err,res) {
             if(err) throw err;
             var itemArray = [];
@@ -14,10 +15,10 @@ var showProds = {
             const table = cTable.getTable(itemArray);
             console.log(colors.bgWhite.black("\nHere are the items currently for sale:\n\n"));
             console.log(table);
-            showProds.askCustBuy(conn,callback);
+            showProds.askCustBuy(callback);
         });
     },
-    askCustBuy: function (conn,callback) {
+    askCustBuy: function (callback) {
         inq.prompt([
             {
                 name: "choice",
@@ -59,7 +60,7 @@ var showProds = {
                                 ], function(err,res) {
                                 if(err) throw err;
                                 // logs the actual query being run
-                                showProds.showCustProds(conn,callback);
+                                showProds.showCustProds(callback);
                             });
                         }
                         else {

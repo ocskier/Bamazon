@@ -2,9 +2,10 @@ const cTable = require("console.table");
 
 var colors = require("colors");
 var inq = require("inquirer");
+var conn = require("./config/connection");
 
 var updateProds = {
-    seeProds: function(conn,callback) {
+    seeProds: function(callback) {
         conn.query("select * from products", function(err,res) {
             if(err) throw err;
             var itemArray = [];
@@ -14,10 +15,10 @@ var updateProds = {
             const table = cTable.getTable(itemArray);
             console.log(colors.bgWhite.black("\nHere are the items currently for sale:\n\n"));
             console.log(table);
-            updateProds.askManager(conn,callback);
+            updateProds.askManager(callback);
         });
     },
-    viewLowInv: function (conn,callback) {
+    viewLowInv: function (callback) {
         conn.query("select * from products where Quantity<5", function(err,res) {
             if(err) throw err;
             var itemArray = [];
@@ -26,11 +27,11 @@ var updateProds = {
             }
             const table = cTable.getTable(itemArray);
             console.log("\nHere are the items low on inventory:\n\n"+table);
-            updateProds.askManager(conn,callback);
+            updateProds.askManager(callback);
         });
     },
-    addInv: function(selItem,newQuantity,conn,callback) {
-        var query = conn.query(
+    addInv: function(selItem,newQuantity,callback) {
+        conn.query(
             "UPDATE products SET ? WHERE ?",
             [ {
                 Quantity: newQuantity
@@ -42,11 +43,11 @@ var updateProds = {
             if(err) throw err;
 
             console.log(colors.bgYellow.red("The updated inventory is "+newQuantity+" of iD: "+selItem));
-            updateProds.seeProds(conn,callback);
+            updateProds.seeProds(callback);
             }
         );
     },
-    askManager: function (conn,callback) {
+    askManager: function (callback) {
         inq.prompt([
             {
                 type: "list",
@@ -64,10 +65,10 @@ var updateProds = {
             if (value.confirm) {
                 switch(value.action) {
                     case "View Products for Sale": 
-                        updateProds.seeProds(conn,callback);
+                        updateProds.seeProds(callback);
                         break;
                     case "View Low Inventory":
-                        updateProds.viewLowInv(conn,callback);
+                        updateProds.viewLowInv(callback);
                         break;
                     case "Add to Inventory":
                         conn.query("select * from products", function(err,res) {
@@ -94,7 +95,7 @@ var updateProds = {
                             ]).then((value) => {
                                 if (isNaN(value.quantity)) {
                                     console.log("\nYou did not enter a valid amount!\n");
-                                    updateProds.askManager(conn,callback);
+                                    updateProds.askManager(callback);
                                 }
                                 else {
                                     conn.query(
@@ -103,7 +104,7 @@ var updateProds = {
                                             id: value.choice
                                         }], function(err,res) {
                                         if(err) throw err;
-                                        updateProds.addInv(value.choice,parseInt(value.quantity)+res[0].Quantity,conn,callback);
+                                        updateProds.addInv(value.choice,parseInt(value.quantity)+res[0].Quantity,callback);
                                     });
                                 }
                             });
@@ -146,7 +147,7 @@ var updateProds = {
                                     if(err) throw err;
                                     // logs the actual query being run
                                     console.log("Item added!");
-                                    updateProds.seeProds(conn,callback);
+                                    updateProds.seeProds(callback);
                                 }
                             )
                         });
@@ -157,7 +158,7 @@ var updateProds = {
                 }
             }
             else {
-                updateProds.askManager(conn,callback);
+                updateProds.askManager(callback);
             }
         });
     }
