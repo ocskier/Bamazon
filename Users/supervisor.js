@@ -2,7 +2,7 @@ const cTable = require("console.table");
 
 var colors = require("colors");
 var inq = require("inquirer");
-var conn = require("./config/connection");
+var conn = require("../config/connection");
 
 function seeDeptSales (callback) {
     conn.query("select departments.Department_id,departments.Department_name,departments.Overhead_Cost, SUM(products.Product_Sales) AS Product_Sales from products RIGHT JOIN departments ON products.Dept = departments.Department_name group by departments.Department_name ORDER BY departments.Department_id ASC",

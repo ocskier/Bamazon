@@ -1,8 +1,8 @@
 var inq = require("inquirer");
 
-var customer=require("./customer.js");
-var manager=require("./manager.js");
-var supervisor=require("./supervisor.js");
+var customer=require("./Users/customer");
+var manager=require("./Users/manager");
+var supervisor=require("./Users/supervisor");
 
 var connection = require("./config/connection");
 

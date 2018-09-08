@@ -2,7 +2,7 @@ const cTable = require("console.table");
 
 var colors = require("colors");
 var inq = require("inquirer");
-var conn = require("./config/connection");
+var conn = require("../config/connection");
 
 var updateProds = {
     seeProds: function(callback) {
