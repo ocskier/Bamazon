@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>
+            Bamazon
+        </title>
+        <link rel="shortcut icon" href="assets/images/favicon.ico" />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/jquery.terminal/2.2.0/css/jquery.terminal.min.css" rel="stylesheet"/>
+        <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.terminal/2.2.0/js/jquery.terminal.min.js"></script>
+        <script src="https://unpkg.com/js-polyfills/keyboard.js"></script>
+        <script src="https://cdn.terminal.jcubic.pl/wcwidth.js"></script>
+    </head>
+    <body>
+        <div id="root">
+
+        </div>
+        <!-- <script src="assets/js/bamazon.js"></script> -->
+        <script type="text/javascript">
+            jQuery(function($, undefined) {
+                $('#root').terminal(function(command) {
+                    if (command !== '') {
+                        try {
+                            var result = command;
+                            console.log(result);
+                            if (result === 'run Bamazon') {
+                                $.get('bamazon',function(value) {
+                                    console.log(res);
+                                })
+                                // .catch((err) => {})
+                            }
+                            else {
+                                this.echo('You must enter run Bamazon!');
+                            }
+                        } catch(e) {
+                            this.error(new String(e));
+                        }
+                    } else {
+                    this.echo('');
+                    }
+                }, {
+                    greetings: 'Bamazon Node App: \nPlease type run Bamazon to start!',
+                    name: 'js_demo',
+                    height: 200,
+                    prompt: 'js> '
+                });
+            });
+        </script>
+    </body>
+</html>
