@@ -3,14 +3,14 @@ const cTable = require("console.table");
 var colors = require("colors");
 var inq = require("inquirer");
 var conn = require("../config/connection");
+var connectToDB = require("../config/connectFunc");
 
 var showProds = {
     showCustProds: function (callback) {
-        conn.query("select id,Description,Price from products", function(err,res) {
-            if(err) throw err;
+        connectToDB(conn,"select id,Description,Price from products").then((data,err) => {
             var itemArray = [];
-            for (let i = 0; i < res.length; i++) {
-                itemArray.push(res[i]);
+            for (let i = 0; i < data.length; i++) {
+                itemArray.push(data[i]);
             }
             const table = cTable.getTable(itemArray);
             console.log(colors.bgWhite.black("\nHere are the items currently for sale:\n\n"));
@@ -39,36 +39,28 @@ var showProds = {
             }
         ]).then((value) => {
             if(value.confirm) {
-                conn.query(
-                    "select Price,Quantity,Product_Sales from products WHERE ?",
-                    [{
-                        id: value.choice
-                    }], function(err,res) {
-                        if(err) throw err;
-                        if (value.number<=res[0].Quantity) {
-                            var total = (res[0].Price*value.number).toFixed(2);
+                connectToDB(conn,"select Price,Quantity,Product_Sales from products WHERE ?",[{id: value.choice}])
+                    .then((data,err)=>{
+                        if (value.number<=data[0].Quantity) {
+                            var total = (data[0].Price*value.number).toFixed(2);
                             console.log(colors.bgWhite.bold.red('\n  The total for your order is $'+total+"  "));
-                            conn.query(
-                                "UPDATE products SET ? WHERE ?",
+                            connectToDB(conn,"UPDATE products SET ? WHERE ?",
                                 [ {
-                                    Quantity: res[0].Quantity-value.number,
-                                    Product_Sales: res[0].Product_Sales+res[0].Price*value.number
+                                    Quantity: data[0].Quantity-value.number,
+                                    Product_Sales: data[0].Product_Sales+data[0].Price*value.number
                                 },
                                 {
                                     id: value.choice
-                                }
-                                ], function(err,res) {
-                                if(err) throw err;
-                                // logs the actual query being run
-                                showProds.showCustProds(callback);
-                            });
+                                }])
+                                .then((data,err)=> {
+                                    showProds.showCustProds(callback);
+                                });
                         }
                         else {
                             console.log("\nCan't fulfill order! Sorry.\n");
                             callback();
                         }
-                    }
-                );
+                    });
             }
             else {
                 callback();

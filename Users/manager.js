@@ -3,14 +3,15 @@ const cTable = require("console.table");
 var colors = require("colors");
 var inq = require("inquirer");
 var conn = require("../config/connection");
+var connectToDB = require("../config/connectFunc");
 
 var updateProds = {
     seeProds: function(callback) {
-        conn.query("select * from products", function(err,res) {
+        connectToDB(conn, "select * from products").then((data,err) => {
             if(err) throw err;
             var itemArray = [];
-            for (let i = 0; i < res.length; i++) {
-                itemArray.push(res[i]);
+            for (let i = 0; i < data.length; i++) {
+                itemArray.push(data[i]);
             }
             const table = cTable.getTable(itemArray);
             console.log(colors.bgWhite.black("\nHere are the items currently for sale:\n\n"));
@@ -19,11 +20,11 @@ var updateProds = {
         });
     },
     viewLowInv: function (callback) {
-        conn.query("select * from products where Quantity<5", function(err,res) {
+        connectToDB(conn, "select * from products where Quantity<5").then((data,err) => {
             if(err) throw err;
             var itemArray = [];
-            for (let i = 0; i < res.length; i++) {
-                itemArray.push(res[i]);
+            for (let i = 0; i < data.length; i++) {
+                itemArray.push(data[i]);
             }
             const table = cTable.getTable(itemArray);
             console.log("\nHere are the items low on inventory:\n\n"+table);
@@ -31,7 +32,8 @@ var updateProds = {
         });
     },
     addInv: function(selItem,newQuantity,callback) {
-        conn.query(
+        connectToDB(
+            conn, 
             "UPDATE products SET ? WHERE ?",
             [ {
                 Quantity: newQuantity
@@ -39,13 +41,12 @@ var updateProds = {
             {
                 id: selItem
             }
-            ], function(err) {
-            if(err) throw err;
-
-            console.log(colors.bgYellow.red("The updated inventory is "+newQuantity+" of iD: "+selItem));
-            updateProds.seeProds(callback);
-            }
-        );
+            ])
+            .then((data,err) => {
+                if(err) throw err;
+                console.log(colors.bgYellow.red("The updated inventory is "+newQuantity+" of iD: "+selItem));
+                updateProds.seeProds(callback);
+            });
     },
     askManager: function (callback) {
         inq.prompt([
@@ -71,11 +72,11 @@ var updateProds = {
                         updateProds.viewLowInv(callback);
                         break;
                     case "Add to Inventory":
-                        conn.query("select * from products", function(err,res) {
+                        connectToDB(conn, "select * from products").then((data,err) => {
                             if(err) throw err;
                             var itemArray = [];
-                            for (let i = 0; i < res.length; i++) {
-                                itemArray.push(res[i]);
+                            for (let i = 0; i < data.length; i++) {
+                                itemArray.push(data[i]);
                             }
                             const table = cTable.getTable(itemArray);
                             console.log(colors.bgWhite.black("\nHere are the items currently for sale:\n\n"));
@@ -98,14 +99,15 @@ var updateProds = {
                                     updateProds.askManager(callback);
                                 }
                                 else {
-                                    conn.query(
+                                    connectToDB(
+                                        conn, 
                                         "select Quantity from products WHERE ?",
                                         [{
                                             id: value.choice
-                                        }], function(err,res) {
-                                        if(err) throw err;
-                                        updateProds.addInv(value.choice,parseInt(value.quantity)+res[0].Quantity,callback);
-                                    });
+                                        }]).then((data,err) => {
+                                            if(err) throw err;
+                                            updateProds.addInv(value.choice,parseInt(value.quantity)+data[0].Quantity,callback);
+                                        });
                                 }
                             });
                         });
@@ -135,7 +137,8 @@ var updateProds = {
                                 type: "input"
                             }
                         ]).then((value) => {
-                            conn.query(
+                            connectToDB(
+                                conn, 
                                 "INSERT INTO products SET ?", 
                                 {
                                     Dept: value.newDept,
@@ -143,13 +146,12 @@ var updateProds = {
                                     Price: value.newPrice,
                                     Quantity: value.newQuant    
                                 },
-                                function(err) {
-                                    if(err) throw err;
-                                    // logs the actual query being run
-                                    console.log("Item added!");
-                                    updateProds.seeProds(callback);
-                                }
-                            )
+                            ).then((data, err) => {
+                                if(err) throw err;
+                                // logs the actual query being run
+                                console.log("Item added!");
+                                updateProds.seeProds(callback);
+                            })
                         });
                         break;
                         
