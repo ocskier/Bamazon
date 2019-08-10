@@ -1,6 +1,6 @@
 const express = require('express');
 const path = require('path');
-const runShop = require('./bamazon');
+const runShop = require('./bamazonWith$Terminal');
 
 const PORT = 8080;
 
@@ -11,6 +11,11 @@ app.use(express.static('public'));
 app.get('/', function(req,res) {
     res.sendFile(path.join(__dirname, "index.html"));
     // runShop.go();
+});
+
+app.get('/bamazon', function(req,res) {
+    const response = runShop(req.query.data);
+    res.json(response);
 });
 
 app.listen(PORT, function() {

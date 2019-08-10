@@ -25,12 +25,16 @@
                         try {
                             var result = command;
                             console.log(result);
-                            if (result === 'run Bamazon') {
-                                $.get('bamazon',function(value) {
-                                    console.log(res);
-                                })
-                                // .catch((err) => {})
-                            }
+                            var clonedEcho = this.echo;
+                            if (result) {
+                                $.get('/bamazon',{
+                                    data: result
+                                }, (value) => {
+                                    console.log(value);
+                                    clonedEcho('\n'+ value.msg + '\n');
+                                });
+                            } 
+                              // .catch((err) => {})
                             else {
                                 this.echo('You must enter run Bamazon!');
                             }

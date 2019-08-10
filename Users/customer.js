@@ -7,16 +7,17 @@ var connectToDB = require("../config/connectFunc");
 
 var showProds = {
     showCustProds: function (callback) {
+        var itemArray = [];
         connectToDB(conn,"select id,Description,Price from products").then((data,err) => {
-            var itemArray = [];
             for (let i = 0; i < data.length; i++) {
                 itemArray.push(data[i]);
             }
             const table = cTable.getTable(itemArray);
             console.log(colors.bgWhite.black("\nHere are the items currently for sale:\n\n"));
             console.log(table);
-            showProds.askCustBuy(callback);
+            // showProds.askCustBuy(callback);
         });
+        callback(itemArray);
     },
     askCustBuy: function (callback) {
         inq.prompt([
