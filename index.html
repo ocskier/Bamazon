@@ -1,56 +1,93 @@
 <!DOCTYPE html>
 <html lang="en-us">
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>
-            Bamazon
-        </title>
-        <link rel="shortcut icon" href="assets/images/favicon.ico" />
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/jquery.terminal/2.2.0/css/jquery.terminal.min.css" rel="stylesheet"/>
-        <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.terminal/2.2.0/js/jquery.terminal.min.js"></script>
-        <script src="https://unpkg.com/js-polyfills/keyboard.js"></script>
-        <script src="https://cdn.terminal.jcubic.pl/wcwidth.js"></script>
-    </head>
-    <body>
-        <div id="root">
-
-        </div>
-        <!-- <script src="assets/js/bamazon.js"></script> -->
-        <script type="text/javascript">
-            jQuery(function($, undefined) {
-                $('#root').terminal(function(command) {
-                    if (command !== '') {
-                        try {
-                            var result = command;
-                            console.log(result);
-                            var clonedEcho = this.echo;
-                            if (result) {
-                                $.get('/bamazon',{
-                                    data: result
-                                }, (value) => {
-                                    console.log(value);
-                                    clonedEcho('\n'+ value.msg + '\n');
-                                });
-                            } 
-                              // .catch((err) => {})
-                            else {
-                                this.echo('You must enter run Bamazon!');
-                            }
-                        } catch(e) {
-                            this.error(new String(e));
-                        }
-                    } else {
-                    this.echo('');
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>
+      Bamazon
+    </title>
+    <link rel="shortcut icon" href="assets/images/favicon.ico" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/jquery.terminal/2.2.0/css/jquery.terminal.min.css"
+      rel="stylesheet"
+    />
+    <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
+    <link type="text/css" href="assets/css/style.css" rel="stylesheet">  
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.terminal/2.2.0/js/jquery.terminal.min.js"></script>
+    <script src="https://unpkg.com/js-polyfills/keyboard.js"></script>
+    <script src="https://cdn.terminal.jcubic.pl/wcwidth.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <div class="mdc-data-table" style="margin: 0 auto; width: 65%; display: block">
+      <table id="my-Table" class="mdc-data-table__table" aria-label="Dessert calories">
+        <!-- My data table goes here dynamically! -->
+      </table>
+    </div>
+    <!-- <script src="assets/js/bamazon.js"></script> -->
+    <script type="text/javascript">
+     
+      function reprintTable(rows) {
+        $("#my-Table").empty();
+        var newHead = $('<thead></thead>');
+        var newHeadRow = $('<tr class="mdc-data-table__header-row></tr>');
+        Object.keys(rows[0]).map(col=>
+          newHeadRow.append(`<th class="mdc-data-table__header-cell" role="columnheader" scope="col">${col}</th>`));
+        newHead
+          .append(newHeadRow);
+        $('#my-Table').append(newHead);
+        var newBody = $('<tbody class="mdc-data-table__content"></tbody>');
+        rows.map(row=>{
+          var newBodyRow = $('<tr class="mdc-data-table__row"></tr>');
+          newBodyRow.append(`<td class="mdc-data-table__cell">${row.id}</td>`);
+          newBodyRow.append(`<td class="mdc-data-table__cell">${row.Description}</td>`);
+          newBodyRow.append(`<td class="mdc-data-table__cell mdc-data-table__cell--numeric">${row.Price}</td>`);
+          newBody.append(newBodyRow);
+        });
+        $('#my-Table').append(newBody);
+      }
+      
+      jQuery(function($, undefined) {
+        $("#root").terminal(
+          function(command) {
+            if (command !== "") {
+              try {
+                var result = command;
+                console.log(result);
+                var clonedEcho = this.echo;
+                if (result) {
+                  $.get(
+                    "/bamazon",
+                    {
+                      data: result
+                    },
+                    value => {
+                      console.log(value);
+                      clonedEcho("\n" + value.msg + "\n");
+                      value.data.length > 0 && reprintTable(value.data);
                     }
-                }, {
-                    greetings: 'Bamazon Node App: \nPlease type run Bamazon to start!',
-                    name: 'js_demo',
-                    height: 200,
-                    prompt: 'js> '
-                });
-            });
-        </script>
-    </body>
+                  );
+                }
+                // .catch((err) => {})
+                else {
+                  this.echo("You must enter run Bamazon!");
+                }
+              } catch (e) {
+                this.error(new String(e));
+              }
+            } else {
+              this.echo("");
+            }
+          },
+          {
+            greetings: "Bamazon Node App: \nPlease type run Bamazon to start!",
+            name: "js_demo",
+            height: 200,
+            prompt: "js> "
+          }
+        );
+      });
+    </script>
+  </body>
 </html>

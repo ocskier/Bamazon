@@ -13,8 +13,9 @@ app.get('/', function(req,res) {
     // runShop.go();
 });
 
-app.get('/bamazon', function(req,res) {
-    const response = runShop(req.query.data);
+app.get('/bamazon', async function(req,res) {
+    const response = await runShop(req.query.data);
+    console.log(response);
     res.json(response);
 });
 

@@ -19,9 +19,15 @@ function shop(cliInput) {
                     return reply
                     break;
                 case "customer":
-                    reply.msg =  "Hi how are you doing today?";
-                    reply.data = customer.custFunc.showCustProds((a)=>{return a});
-                    return reply
+                    async function go() {
+                        await customer.custFunc.showCustProds().then(data=>{
+                        reply.msg = "Hi how are you doing today?";
+                        reply.data = data;
+                        console.log(reply);
+                        });
+                        return reply
+                    }
+                    return go();
                     break;
 
                 case "manager":     
