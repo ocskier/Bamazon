@@ -2,12 +2,13 @@ var inq = require("inquirer");
 
 var Customer = require("./Users/customer");
 var Manager = require("./Users/manager");
-var supervisor = require("./Users/supervisor");
+var Supervisor = require("./Users/supervisor");
 
 var connection = require("./config/connection");
 
 var customer = new Customer();
 var manager = new Manager();
+var supervisor = new Supervisor();
 
 const shop = {
   getJob: function () {
@@ -39,7 +40,7 @@ const shop = {
               break;
 
             case "supervisor":
-              supervisor.superFunc.askSup(shop.getJob);
+              supervisor.askSup(shop.getJob);
               break;
 
             default:
