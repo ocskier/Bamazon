@@ -1,4 +1,4 @@
-const cTable = require("console.table");
+const { printTable } = require('console-table-printer');
 
 var colors = require("colors");
 var inq = require("inquirer");
@@ -19,9 +19,8 @@ function seeDeptSales(callback) {
       !data[i].Product_Sales ? (data[i].Product_Sales = 0) : null;
       itemArray.push(data[i]);
     }
-    const table = cTable.getTable(itemArray);
     console.log(colors.bgWhite.black("\nHere are the store results:\n\n"));
-    console.log(table);
+    printTable(itemArray);
     checkProds.askSup(callback);
   });
 }

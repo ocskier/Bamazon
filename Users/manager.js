@@ -1,4 +1,4 @@
-const cTable = require("console.table");
+const { printTable } = require('console-table-printer');
 
 var colors = require("colors");
 var inq = require("inquirer");
@@ -9,15 +9,10 @@ var updateProds = {
   seeProds: function(callback) {
     connectToDB(conn, "select * from products").then((data, err) => {
       if (err) throw err;
-      var itemArray = [];
-      for (let i = 0; i < data.length; i++) {
-        itemArray.push(data[i]);
-      }
-      const table = cTable.getTable(itemArray);
       console.log(
         colors.bgWhite.black("\nHere are the items currently for sale:\n\n")
       );
-      console.log(table);
+      printTable(data);
       updateProds.askManager(callback);
     });
   },
@@ -25,12 +20,7 @@ var updateProds = {
     connectToDB(conn, "select * from products where Quantity<5").then(
       (data, err) => {
         if (err) throw err;
-        var itemArray = [];
-        for (let i = 0; i < data.length; i++) {
-          itemArray.push(data[i]);
-        }
-        const table = cTable.getTable(itemArray);
-        console.log("\nHere are the items low on inventory:\n\n" + table);
+        console.log("\nHere are the items low on inventory:\n\n" + printTable(data));
         updateProds.askManager(callback);
       }
     );
@@ -87,17 +77,12 @@ var updateProds = {
             case "Add to Inventory":
               connectToDB(conn, "select * from products").then((data, err) => {
                 if (err) throw err;
-                var itemArray = [];
-                for (let i = 0; i < data.length; i++) {
-                  itemArray.push(data[i]);
-                }
-                const table = cTable.getTable(itemArray);
                 console.log(
                   colors.bgWhite.black(
                     "\nHere are the items currently for sale:\n\n"
                   )
                 );
-                console.log(table);
+                printTable(data);
                 inq
                   .prompt([
                     {

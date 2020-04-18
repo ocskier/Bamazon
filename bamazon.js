@@ -1,10 +1,12 @@
 var inq = require("inquirer");
 
-var customer = require("./Users/customer");
+var Customer = require("./Users/customer");
 var manager = require("./Users/manager");
 var supervisor = require("./Users/supervisor");
 
 var connection = require("./config/connection");
+
+var customer = new Customer;
 
 const shop = {
   getJob: function() {
@@ -28,7 +30,7 @@ const shop = {
           switch (value.job.toLowerCase()) {
             case "customer":
               console.log("\nHi how are you doing today?");
-              customer.custFunc.showCustProds(shop.getJob);
+              customer.showCustProds(shop.getJob);
               break;
 
             case "manager":
