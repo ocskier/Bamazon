@@ -1,42 +1,46 @@
 var inq = require("inquirer");
 
-var customer = require("./Users/customer");
-var manager = require("./Users/manager");
-var supervisor = require("./Users/supervisor");
+var Customer = require("./Users/customer");
+var Manager = require("./Users/manager");
+var Supervisor = require("./Users/supervisor");
 
 var connection = require("./config/connection");
 
+var customer = new Customer();
+var manager = new Manager();
+var supervisor = new Supervisor();
+
 const shop = {
-  getJob: function() {
+  getJob: function () {
     inq
       .prompt([
         {
           name: "job",
           message:
             "What is your role at Bamazon? (Customer,Manager,Supervisor)",
-          type: "input"
+          type: "input",
         },
         {
           name: "confirm",
           message: "Are you sure?",
           type: "confirm",
-          default: true
-        }
+          default: true,
+        },
       ])
-      .then(value => {
+      .then((value) => {
         if (value.confirm) {
           switch (value.job.toLowerCase()) {
             case "customer":
               console.log("\nHi how are you doing today?");
-              customer.custFunc.showCustProds(shop.getJob);
+              customer.showCustProds(shop.getJob);
               break;
 
             case "manager":
-              manager.managerFunc.askManager(shop.getJob);
+              manager.askManager(shop.getJob);
               break;
 
             case "supervisor":
-              supervisor.superFunc.askSup(shop.getJob);
+              supervisor.askSup(shop.getJob);
               break;
 
             default:
@@ -47,10 +51,10 @@ const shop = {
           console.log("Thanks for using Bamazon!");
         }
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
       });
-  }
+  },
 };
 
 shop.getJob();
